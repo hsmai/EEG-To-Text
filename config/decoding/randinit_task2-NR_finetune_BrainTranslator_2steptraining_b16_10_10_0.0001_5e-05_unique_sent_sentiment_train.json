@@ -1,0 +1,27 @@
+{
+    "model_name": "BrainTranslator",
+    "task_name": "task2-NR",
+    "skip_step_one": false,
+    "use_random_init": true,
+    "load_step1_checkpoint": false,
+    "num_epoch_step1": 10,
+    "num_epoch_step2": 10,
+    "learning_rate_step1": 0.0001,
+    "learning_rate_step2": 5e-05,
+    "batch_size": 16,
+    "save_path": "results/model",
+    "subjects": "ALL",
+    "eeg_type": "GD",
+    "eeg_bands": [
+        "_t1",
+        "_t2",
+        "_a1",
+        "_a2",
+        "_b1",
+        "_b2",
+        "_g1",
+        "_g2"
+    ],
+    "cuda": "cuda:0",
+    "train_input": "sentiment_train"
+}
