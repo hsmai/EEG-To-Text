@@ -37,6 +37,39 @@ class BrainTranslator(nn.Module):
     def generate(
             self,
             input_embeddings_batch, input_masks_batch, input_masks_invert, target_ids_batch_converted,
+            **kwargs
+    ):
+        encoded_embedding = self.addin_forward(input_embeddings_batch, input_masks_invert)
+
+        # 👇 1. 직접 encoder_outputs 생성
+        encoder_outputs = self.pretrained.model.encoder(
+            inputs_embeds=encoded_embedding,
+            attention_mask=input_masks_batch[:, :encoded_embedding.shape[1]],
+            return_dict=True
+        )
+
+        # 👇 2. dummy input_ids 추가
+        batch_size = input_embeddings_batch.shape[0]
+        dummy_input_ids = torch.ones((batch_size, 1), dtype=torch.long).to(input_embeddings_batch.device)
+
+        # 👇 3. generate 호출
+        output = self.pretrained.generate(
+            input_ids=dummy_input_ids,  # decoder input을 위해 필요
+            attention_mask=input_masks_batch[:, :encoded_embedding.shape[1]],
+            encoder_outputs=encoder_outputs,  # 직접 만든 encoder 출력 사용
+            max_length=56,
+            num_beams=5,
+            do_sample=True,
+            repetition_penalty=5.0,
+            no_repeat_ngram_size=2
+        )
+
+        return output
+
+    """
+    def generate(
+            self,
+            input_embeddings_batch, input_masks_batch, input_masks_invert, target_ids_batch_converted,
             generation_config = None,
             logits_processor = None,
             stopping_criteria = None,
@@ -52,6 +85,8 @@ class BrainTranslator(nn.Module):
         output=self.pretrained.generate(
             inputs_embeds = encoded_embedding,
             attention_mask = input_masks_batch[:,:encoded_embedding.shape[1]],
+
+
             labels = target_ids_batch_converted,
             return_dict = True,
             generation_config=generation_config,
@@ -63,9 +98,13 @@ class BrainTranslator(nn.Module):
             streamer=streamer,
             negative_prompt_ids=negative_prompt_ids,
             negative_prompt_attention_mask=negative_prompt_attention_mask,
-            **kwargs,)
+            **kwargs,
+
+        )
 
         return output
+        
+        """
 
     def forward(self, input_embeddings_batch, input_masks_batch, input_masks_invert, target_ids_batch_converted):
         encoded_embedding=self.addin_forward(input_embeddings_batch, input_masks_invert)
