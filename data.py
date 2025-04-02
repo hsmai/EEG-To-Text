@@ -125,7 +125,6 @@ def get_input_sample(sent_obj, tokenizer, eeg_type = 'GD', bands = ['_t1','_t2',
         # print("rand_eeg:", rand_eeg)
         # print("input_embeddings:", input_sample['input_embeddings'].shape)
 
-
     #나는 script에 인자를 "--train_input sentiment_train" 이걸로 잘못 전달함 (원래는 eeg data)
     #-> 이 else 덕분에 이상한 인자를 전달 했음에도 운 좋게 noise가 아닌 인자로 인식하여 자동으로 아래 코드로 학습함
     #만약 else가 아니라 elif로 [test_input=='eegdata'] 와 같은 형식이었으면 전달된 인자가 잘못되었으므로 에러 났을 것
